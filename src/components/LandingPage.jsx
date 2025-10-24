@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import DropdownMenuSimple from "./DropdownMenuSimple";
 
 const LandingPage = () => {
@@ -7,6 +8,7 @@ const LandingPage = () => {
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
   const [activeTheme, setActiveTheme] = useState('hero');
+  const [activeService, setActiveService] = useState(null); // index | null
 
 
   // (Removed Three.js background)
@@ -205,16 +207,48 @@ const LandingPage = () => {
               borderColor: 'hover:border-teal-500',
               shadowColor: 'hover:shadow-colored-teal'
             }
-          ].map((service, index) => (
-            <div 
-              key={index}
-              className={`group bg-gradient-to-br ${service.color} border-2 border-neutral-200 ${service.borderColor} rounded-2xl p-8 transition-all duration-300 hover:transform hover:scale-105 ${service.shadowColor} shadow-soft`}
-            >
-              <div className="text-5xl mb-6">{service.icon}</div>
-              <h3 className="text-2xl font-bold mb-4 text-neutral-900">{service.title}</h3>
-              <p className="text-neutral-700 leading-relaxed">{service.description}</p>
-            </div>
-          ))}
+          ].map((service, index) => {
+            const isActive = activeService === index;
+            const isDimmed = activeService !== null && !isActive;
+            return (
+              <motion.div
+                key={index}
+                layout
+                onClick={() => setActiveService(isActive ? null : index)}
+                initial={false}
+                animate={{
+                  scale: isActive ? 1.05 : isDimmed ? 0.95 : 1,
+                  opacity: isDimmed ? 0.7 : 1,
+                }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className={`cursor-pointer group bg-gradient-to-br ${service.color} border-2 border-neutral-200 ${service.borderColor} rounded-2xl p-8 ${service.shadowColor} ${isActive ? 'shadow-soft-lg' : 'shadow-soft'} transition-all duration-300`}
+              >
+                <motion.div layout className="flex items-center gap-4">
+                  <div className="text-5xl">{service.icon}</div>
+                  <h3 className="text-2xl font-bold text-neutral-900">{service.title}</h3>
+                </motion.div>
+
+                <AnimatePresence initial={false}>
+                  {isActive && (
+                    <motion.div
+                      key="content"
+                      layout
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.5, ease: 'easeInOut', delay: 0.1 }}
+                      className="mt-4"
+                    >
+                      <p className="text-neutral-700 leading-relaxed mb-4">{service.description}</p>
+                      <button className="inline-flex items-center px-4 py-2 bg-white/80 hover:bg-white text-neutral-900 rounded-xl font-semibold border border-neutral-200 shadow-soft transition-colors">
+                        Learn more
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
         </section>
 

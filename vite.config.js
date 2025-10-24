@@ -4,7 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()
-, tailwindcss()
+  // Use BASE_PATH when provided (CI), otherwise default to '/'
+  base: process.env.BASE_PATH ?? '/',
+  plugins: [
+    react(),
+    tailwindcss(),
   ],
 })

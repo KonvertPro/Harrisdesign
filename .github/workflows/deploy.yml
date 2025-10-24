@@ -59,6 +59,14 @@ jobs:
       - name: Build
         shell: bash
         run: |
+          # Set BASE_PATH for Vite so assets resolve on GitHub Pages
+          REPO_NAME="${{ github.event.repository.name }}"
+          if [[ "$REPO_NAME" == *.github.io ]]; then
+            echo "BASE_PATH=/" >> $GITHUB_ENV
+          else
+            echo "BASE_PATH=/$REPO_NAME/" >> $GITHUB_ENV
+          fi
+
           if [ "${{ steps.pm.outputs.manager }}" = "pnpm" ]; then
             pnpm run build
           elif [ "${{ steps.pm.outputs.manager }}" = "yarn" ]; then
@@ -83,6 +91,11 @@ jobs:
             exit 1
           fi
 
+      - name: Add SPA fallback (404.html)
+        shell: bash
+        run: |
+          cp "${{ steps.outdir.outputs.dir }}/index.html" "${{ steps.outdir.outputs.dir }}/404.html"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -98,4 +111,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
