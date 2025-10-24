@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DropdownMenuSimple from "./DropdownMenuSimple";
 
 const LandingPage = () => {
@@ -6,6 +6,7 @@ const LandingPage = () => {
   const words = ["Creators", "Startups", "Brands"];
   const [wordIndex, setWordIndex] = useState(0);
   const [wordVisible, setWordVisible] = useState(true);
+  const [activeTheme, setActiveTheme] = useState('hero');
 
 
   // (Removed Three.js background)
@@ -51,11 +52,61 @@ const LandingPage = () => {
     return () => observer.disconnect();
   }, []);
 
+  // === BACKGROUND THEME BY SCROLL ===
+  useEffect(() => {
+    const sectionIds = ['hero', 'services', 'work', 'testimonials', 'cta'];
+
+    const getActiveByCenter = () => {
+      const centerY = window.innerHeight / 2;
+      let closestId = 'hero';
+      let closestDelta = Infinity;
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const sectionCenter = rect.top + rect.height / 2;
+        const delta = Math.abs(sectionCenter - centerY);
+        if (delta < closestDelta) {
+          closestDelta = delta;
+          closestId = id;
+        }
+      });
+      return closestId;
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const id = getActiveByCenter();
+        setActiveTheme((prev) => (prev === id ? prev : id));
+        ticking = false;
+      });
+    };
+
+    // Run on mount and on resize for accuracy
+    const onResize = () => {
+      const id = getActiveByCenter();
+      setActiveTheme((prev) => (prev === id ? prev : id));
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    // initial
+    onResize();
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
   // === JSX RETURN ===
   return (
     <div className="relative bg-white text-neutral-900 font-custom">
       {/* Subtle animated violet background glows */}
-      <div className="violet-glows" aria-hidden="true">
+      <div className={`violet-glows theme-${activeTheme}`} aria-hidden="true">
         <span className="blob blob-1"></span>
         <span className="blob blob-2"></span>
         <span className="blob blob-3"></span>
@@ -66,7 +117,7 @@ const LandingPage = () => {
         <DropdownMenuSimple />
 
         {/* Hero Section */}
-        <section className="relative z-10 px-6 pt-20 pb-32 max-w-7xl mx-auto">
+        <section id="hero" className="relative z-10 px-6 pt-20 pb-12 md:pb-16 max-w-7xl mx-auto">
           <div className="max-w-5xl">
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-semibold tracking-tight leading-none mb-8 text-neutral-900">
             <span className="inline-flex items-baseline gap-[0.3em]">
@@ -82,7 +133,7 @@ const LandingPage = () => {
               </span>
             </span>
             <span className="block text-transparent bg-clip-text bg-neutral-800">
-              stand out
+              stand out.
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-neutral-600 mb-12 max-w-2xl leading-relaxed">
@@ -97,11 +148,18 @@ const LandingPage = () => {
             </a>
             <a
               href="#cta"
-              className="inline-flex items-center justify-center px-8 py-4 border-2 border-neutral-300 hover:border-blue-500 text-neutral-900 transition-all duration-300 rounded-xl font-semibold text-lg hover:bg-blue-50"
+              className="inline-flex items-center justify-center px-8 py-4 border-2 border-neutral-300 hover:border-neutral-500 text-neutral-900 transition-all duration-300 rounded-xl font-semibold text-lg hover:bg-violet-50"
             >
-              Let's Talk
+              Get started
             </a>
           </div>
+          </div>
+        </section>
+
+        {/* Ticker Break Between Hero and Services */}
+        <section className="relative z-10 py-12 md:py-16">
+          <div className="px-6 max-w-7xl mx-auto xl:px-0 xl:max-w-none xl:mx-0 xl:w-screen xl:relative xl:left-1/2 xl:right-1/2 xl:-ml-[50vw] xl:-mr-[50vw]">
+            <HeroTicker />
           </div>
         </section>
 
@@ -305,3 +363,122 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+// === HeroTicker component ===
+const HeroTicker = () => {
+  // Example items (use your own images/logos here)
+  const itemsA = [
+    { title: 'Creative Studio', img: 'https://picsum.photos/seed/creative1/600/400' },
+    { title: 'SaaS Dashboard', img: 'https://picsum.photos/seed/app2/600/400' },
+    { title: 'Portfolio Grid', img: 'https://picsum.photos/seed/folio3/600/400' },
+    { title: 'Product Landing', img: 'https://picsum.photos/seed/landing4/600/400' },
+    { title: 'Photography', img: 'https://picsum.photos/seed/photo5/600/400' },
+    { title: 'Architecture', img: 'https://picsum.photos/seed/arch6/600/400' },
+  ];
+  const itemsB = [
+    { title: 'Startup MVP', img: 'https://picsum.photos/seed/mvp1/600/400' },
+    { title: 'Ecommerce', img: 'https://picsum.photos/seed/shop2/600/400' },
+    { title: 'Fintech', img: 'https://picsum.photos/seed/fin3/600/400' },
+    { title: 'Travel Blog', img: 'https://picsum.photos/seed/travel4/600/400' },
+    { title: 'Consulting', img: 'https://picsum.photos/seed/consult5/600/400' },
+    { title: 'Wellness', img: 'https://picsum.photos/seed/well6/600/400' },
+  ];
+
+  return (
+    <div className="ticker select-none">
+      <TickerRowJS direction="left" items={itemsA} baseSpeed={36} />
+      <div className="h-4" />
+      <TickerRowJS direction="right" items={itemsB} baseSpeed={30} />
+    </div>
+  );
+};
+
+
+const TickerRowJS = ({ direction = "left", items = [], baseSpeed = 60 }) => {
+  const trackRef = useRef(null);
+  const groupRef = useRef(null);
+  const hoveringRef = useRef(false);
+  const rafRef = useRef(0);
+  const posRef = useRef(0);
+  const widthRef = useRef(0);
+  const lastTimeRef = useRef(0);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const measure = () => {
+      if (!groupRef.current) return;
+      widthRef.current = groupRef.current.offsetWidth;
+      // Initialize position so rightward flow starts seamlessly
+      posRef.current = direction === 'right' ? -widthRef.current : 0;
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(${posRef.current}px)`;
+      }
+    };
+    measure();
+    const onResize = () => measure();
+    window.addEventListener('resize', onResize);
+
+    if (reduceMotion) {
+      return () => window.removeEventListener('resize', onResize);
+    }
+
+    const step = (now) => {
+      if (!lastTimeRef.current) lastTimeRef.current = now;
+      const dt = Math.min(64, now - lastTimeRef.current); // cap delta to avoid jumps
+      lastTimeRef.current = now;
+
+      const speedPxPerSec = baseSpeed * (hoveringRef.current ? 0.28 : 1);
+      const delta = (speedPxPerSec * dt) / 1000;
+
+      if (direction === 'left') {
+        posRef.current -= delta;
+        if (posRef.current <= -widthRef.current) {
+          posRef.current += widthRef.current;
+        }
+      } else {
+        posRef.current += delta;
+        if (posRef.current >= 0) {
+          posRef.current -= widthRef.current;
+        }
+      }
+
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(${posRef.current}px)`;
+      }
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      lastTimeRef.current = 0;
+    };
+  }, [baseSpeed, direction]);
+
+  const onEnter = () => { hoveringRef.current = true; };
+  const onLeave = () => { hoveringRef.current = false; };
+
+  return (
+    <div className="ticker-row">
+      <div className="ticker-track" ref={trackRef}>
+        <div className="ticker-group" ref={groupRef}>
+          {items.map((it, i) => (
+            <a key={`a-${i}`} className="ticker-item" href="#" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+              <img src={it.img} alt={it.title} loading="lazy" />
+              <div className="caption">{it.title}</div>
+            </a>
+          ))}
+        </div>
+        <div className="ticker-group" aria-hidden="true">
+          {items.map((it, i) => (
+            <a key={`b-${i}`} className="ticker-item" href="#" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+              <img src={it.img} alt="" loading="lazy" />
+              <div className="caption">{it.title}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
