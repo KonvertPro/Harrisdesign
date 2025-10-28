@@ -30,17 +30,13 @@ jobs:
       - name: Install
         run: npm ci
 
-      # IMPORTANT: This matches your vite.config.js which reads process.env.BASE_PATH
-      # For a repo page like username.github.io/<repo>, set BASE_PATH to "/<repo>/"
       - name: Build
-        env:
-          BASE_PATH: "/https://konvertpro.github.io/Harrisdesign/"   # ← replace with your repo name, keep the leading & trailing slashes
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist   # Vite’s default outDir
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
