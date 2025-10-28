@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
@@ -21,89 +21,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: "20"
+          cache: "npm"
 
-      - name: Detect package manager
-        id: pm
-        shell: bash
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "manager=pnpm" >> $GITHUB_OUTPUT
-          elif [ -f yarn.lock ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-          else
-            echo "manager=npm" >> $GITHUB_OUTPUT
-          fi
+      - name: Install
+        run: npm ci
 
-      - name: Setup pnpm
-        if: steps.pm.outputs.manager == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install dependencies
-        shell: bash
-        run: |
-          if [ "${{ steps.pm.outputs.manager }}" = "pnpm" ]; then
-            pnpm install --frozen-lockfile
-          elif [ "${{ steps.pm.outputs.manager }}" = "yarn" ]; then
-            yarn install --frozen-lockfile
-          else
-            npm ci
-          fi
-
+      # IMPORTANT: This matches your vite.config.js which reads process.env.BASE_PATH
+      # For a repo page like username.github.io/<repo>, set BASE_PATH to "/<repo>/"
       - name: Build
-        shell: bash
-        run: |
-          # Set BASE_PATH for Vite so assets resolve on GitHub Pages
-          REPO_NAME="${{ github.event.repository.name }}"
-          if [[ "$REPO_NAME" == *.github.io ]]; then
-            echo "BASE_PATH=/" >> $GITHUB_ENV
-          else
-            echo "BASE_PATH=/$REPO_NAME/" >> $GITHUB_ENV
-          fi
-
-          if [ "${{ steps.pm.outputs.manager }}" = "pnpm" ]; then
-            pnpm run build
-          elif [ "${{ steps.pm.outputs.manager }}" = "yarn" ]; then
-            yarn build
-          else
-            npm run build
-          fi
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Detect build output directory
-        id: outdir
-        shell: bash
-        run: |
-          if [ -d dist ]; then
-            echo "dir=dist" >> $GITHUB_OUTPUT
-          elif [ -d build ]; then
-            echo "dir=build" >> $GITHUB_OUTPUT
-          else
-            echo "No build directory (dist or build) found after build." >&2
-            exit 1
-          fi
-
-      - name: Add SPA fallback (404.html)
-        shell: bash
-        run: |
-          cp "${{ steps.outdir.outputs.dir }}/index.html" "${{ steps.outdir.outputs.dir }}/404.html"
+        env:
+          BASE_PATH: "/https://konvertpro.github.io/Harrisdesign/"   # ← replace with your repo name, keep the leading & trailing slashes
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ steps.outdir.outputs.dir }}
+          path: dist   # Vite’s default outDir
 
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
