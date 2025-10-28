@@ -1,6 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
+    
     <script>
   (function() {
     const redirect = sessionStorage.getItem('redirect');
@@ -10,20 +11,23 @@
     }
   })();
 </script>
+
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Chillax font -->
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=chillax@200,300,400,500,600,700&display=swap" />
-    <!-- Inter font for body -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <title>harrisdesign</title>
+    <meta name="description" content="Alfie Harris Web Design – Creative modern websites built with care." />
+    <title>Alfie Harris Design</title>
+
+    <!-- Font (moved here to fix @import warning) -->
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=chillax@200,300,400,500,600,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Vite injects built assets here automatically -->
   </head>
-  <body class="font-sans">
+  <body class="font-['Chillax'] bg-white text-gray-900">
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/Harrisdesign/assets/index-CjYprwHE.js"></script>
+    <!-- 👆 in dev mode, this will be /src/main.jsx — Vite replaces it automatically during build -->
   </body>
 </html>
