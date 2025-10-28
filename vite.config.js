@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   // Use BASE_PATH when provided (CI), otherwise default to '/'
-  base: process.env.BASE_PATH ?? '/',
+  base: process.env.BASE_PATH ?? '/https://konvertpro.github.io/Harrisdesign/',
   plugins: [
     react(),
     tailwindcss(),

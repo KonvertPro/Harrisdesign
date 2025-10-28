@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <script>
+      // Preserve the path the user tried to visit
+      const redirectTo = window.location.pathname + window.location.search + window.location.hash;
+      sessionStorage.setItem('redirect', redirectTo);
+      window.location.href = '/Harrisdesign/'; // 👈 Replace with your repo name
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>

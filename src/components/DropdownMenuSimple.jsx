@@ -32,8 +32,8 @@ export default function DropdownMenuSimple() {
       <div className="px-6 py-4 max-w-7xl mx-auto flex items-center justify-between">
         {/* Brand */}
         <a href="#top" className="text-2xl font-bold tracking-tight select-none">
-          <span className="text-neutral-900">Desing</span>
-          <span className="text-neutral-600">Logo</span>
+          <span className="text-neutral-900">Harris</span>
+          <span className="text-violet-600">Design</span>
         </a>
 
         {/* Desktop links ≥1000px */}
