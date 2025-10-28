@@ -1,33 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    
-    <script>
-  (function() {
-    const redirect = sessionStorage.getItem('redirect');
-    if (redirect) {
-      sessionStorage.removeItem('redirect');
-      history.replaceState(null, null, redirect);
-    }
-  })();
-</script>
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Alfie Harris Web Design – Creative modern websites built with care." />
-    <title>Alfie Harris Design</title>
+    <title>Alfie Harris Web Design</title>
 
-    <!-- Font (moved here to fix @import warning) -->
-    <link
-      href="https://api.fontshare.com/v2/css?f[]=chillax@200,300,400,500,600,700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Restore SPA route if coming from 404.html -->
+    <script>
+      (function () {
+        const redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
 
-    <!-- Vite injects built assets here automatically -->
+    <!-- Chillax font -->
+    <link href="https://api.fontshare.com/v2/css?f[]=chillax@200,300,400,500,600,700&display=swap" rel="stylesheet" />
   </head>
   <body class="font-['Chillax'] bg-white text-gray-900">
     <div id="root"></div>
-    <script type="module" src="/Harrisdesign/assets/index-CjYprwHE.js"></script>
-    <!-- 👆 in dev mode, this will be /src/main.jsx — Vite replaces it automatically during build -->
+
+    <!-- IMPORTANT: source entry; Vite rewrites this to /assets/... on build -->
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
